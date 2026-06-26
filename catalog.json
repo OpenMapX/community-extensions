@@ -1,0 +1,27 @@
+{
+  "extensions": [
+    {
+      "id": "openconditions",
+      "name": "OpenConditions — Road & Traffic Conditions",
+      "summary": "Live road & traffic conditions overlay (DATEX II / Open511 / WZDx) plus closure-aware routing.",
+      "description": "Ingests live road and traffic conditions as data from 30+ public feeds (DATEX II, OpenLR, Open511, WZDx) into PostGIS, renders them as a map overlay, and feeds Valhalla road-closure avoidance. Ships the ingestion service; the road-conditions overlay is built into OpenMapX.",
+      "author": "OpenConditions Contributors",
+      "homepage": "https://github.com/OpenConditions/openconditions",
+      "categories": ["road-conditions", "data-source", "map-overlay"],
+      "tags": ["traffic", "datex2", "open511", "wzdx", "incidents"],
+      "version": "0.1.5",
+      "minPlatform": "1.0",
+      "lastUpdated": "2026-06-26T00:00:00Z",
+      "featured": true,
+      "services": [
+        {
+          "repo": "https://github.com/OpenConditions/openconditions",
+          "ref": "v0.1.5",
+          "service": "openconditions-ingest"
+        }
+      ]
+    }
+  ],
+  "removed": [],
+  "critical": []
+}
