@@ -9,17 +9,11 @@
       "homepage": "https://github.com/OpenConditions/openconditions",
       "categories": ["road-conditions", "data-source", "map-overlay"],
       "tags": ["traffic", "datex2", "open511", "wzdx", "incidents"],
-      "version": "0.1.5",
+      "version": "0.1.6",
       "minPlatform": "1.0",
-      "lastUpdated": "2026-06-26T00:00:00Z",
+      "lastUpdated": "2026-06-29T00:00:00Z",
       "featured": true,
-      "services": [
-        {
-          "repo": "https://github.com/OpenConditions/openconditions",
-          "ref": "v0.1.5",
-          "service": "openconditions-ingest"
-        }
-      ]
+      "manifest": "https://github.com/OpenConditions/openconditions/releases/latest/download/extension.json"
     }
   ],
   "removed": [],
