@@ -32,7 +32,17 @@ for (const [i, e] of entries.entries()) {
   if (seen.has(e.id)) errors.push(`${at}: duplicate id`);
   seen.add(e.id);
   if (!e.name) errors.push(`${at}: name is required`);
-  if (!e.version) errors.push(`${at}: version is required`);
+  // version/platform are developer-controlled and read live from the manifest —
+  // a manifest entry must NOT carry them (keeps the catalog free of per-release
+  // edits). Inline entries (no manifest) still declare their own version.
+  if (!e.manifest && !e.version) {
+    errors.push(`${at}: version is required for inline entries (no manifest)`);
+  }
+  if (e.manifest && (e.version || e.minPlatform || e.lastUpdated)) {
+    errors.push(
+      `${at}: a manifest entry must not carry version/minPlatform/lastUpdated — those come from the manifest`,
+    );
+  }
 
   const services = e.services ?? [];
   const integrations = e.integrations ?? [];

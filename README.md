@@ -26,32 +26,46 @@ tier.
 }
 ```
 
-Each entry either **inlines** its components or points at an authoritative `extension.json` via `manifest`:
+An entry carries only **editorial** metadata (how it appears in the store) plus a pointer to the
+extension's own components. Everything developer-controlled — **`version`, `minPlatform`, the
+components, and the release date** — comes from the extension's `extension.json`, *not* from this
+catalog, so a new release never needs a catalog edit.
+
+**Recommended — point `manifest` at a moving "latest release" url** (so updates flow from your
+releases automatically):
 
 ```jsonc
 {
   "id": "my-extension",                    // ^[a-z0-9][a-z0-9-]*$
   "name": "My Extension",
   "summary": "One line for the card.",
+  "description": "A paragraph for the detail view.",
   "author": "You",
   "homepage": "https://github.com/you/my-extension",
   "categories": ["data-source"],
   "tags": ["example"],
-  "version": "1.0.0",
-  "minPlatform": "1.0",
-  "lastUpdated": "2026-06-26T00:00:00Z",
   "featured": false,
-
-  // EITHER inline the components …
-  "services":     [ { "repo": "https://github.com/you/my-extension", "ref": "v1.0.0", "service": "my-service" } ],
-  "integrations": [ { "artifact": "https://…/my-integration.tar.gz", "sha256": "<hex>", "id": "my-integration" } ]
-
-  // … OR reference a hosted extension.json instead:
-  // "manifest": "https://raw.githubusercontent.com/you/my-extension/main/extension.json"
+  "manifest": "https://github.com/you/my-extension/releases/latest/download/extension.json"
 }
 ```
 
-Services are pinned by git `ref` (tag/commit); integrations are pinned by `sha256`. See the OpenMapX
+The store reads `version`/`minPlatform`/components live from that manifest; a manifest entry must
+**not** carry them (the validator rejects it). Point `manifest` at a pinned tag instead
+(`…/releases/download/v1.2.3/extension.json`) if you want each version gated behind a catalog edit.
+
+**Alternative — inline the components** (no `manifest`). Then the entry *does* declare its own
+`version` and pins each part directly — and every release needs a catalog PR:
+
+```jsonc
+{
+  "id": "my-extension", "name": "My Extension", "summary": "…", "categories": ["data-source"],
+  "version": "1.0.0",
+  "services":     [ { "repo": "https://github.com/you/my-extension", "ref": "v1.0.0", "service": "my-service" } ],
+  "integrations": [ { "artifact": "https://…/my-integration.tar.gz", "sha256": "<hex>", "id": "my-integration" } ]
+}
+```
+
+Services are pinned by git `ref` (tag/commit); integrations by `sha256`. See the OpenMapX
 `extension.json` spec for the authoritative schema.
 
 ## Submitting an extension
