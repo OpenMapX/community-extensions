@@ -75,3 +75,22 @@ Services are pinned by git `ref` (tag/commit); integrations by `sha256`. See the
 3. CI validates the catalog (schema + reachable manifest/artifacts). A maintainer confirms ownership and merges.
 
 That merge is what makes your extension `verified`.
+
+## Revocations
+
+`revocations.json` is a deny-only feed that OpenMapX instances fetch from `main`. It can disable an
+extension but never add one, change a manifest or raise trust.
+
+```json
+{
+  "removed": [{ "id": "gone-ext", "reason": "abandoned" }],
+  "critical": [{ "id": "bad-ext", "reason": "advisory", "maxVersion": "1.2.0" }]
+}
+```
+
+`removed` withdraws an extension. `critical` blocks it from running on every instance; `maxVersion`
+is shown to operators as the last affected version and does not narrow the block. Lift a revocation
+by deleting its entry. CI rejects
+the file if instances could not read it, or if a mistake would be silently ignored, such as a
+misspelled list name. An instance that cannot read a valid feed keeps its last good copy and marks it
+stale.
