@@ -88,8 +88,9 @@ extension but never add one, change a manifest or raise trust.
 }
 ```
 
-`removed` withdraws an extension entirely. `critical` blocks versions up to and including
-`maxVersion` (every version when it is omitted). Lift a revocation by deleting its entry. CI rejects
+`removed` withdraws an extension. `critical` blocks it from running on every instance; `maxVersion`
+is shown to operators as the last affected version and does not narrow the block. Lift a revocation
+by deleting its entry. CI rejects
 the file if instances could not read it, or if a mistake would be silently ignored, such as a
 misspelled list name. An instance that cannot read a valid feed keeps its last good copy and marks it
 stale.
