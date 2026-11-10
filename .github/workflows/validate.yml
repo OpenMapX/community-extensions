@@ -1,4 +1,4 @@
-name: Validate catalog
+name: Validate catalog and revocations
 on:
   pull_request:
   push:
@@ -13,3 +13,7 @@ jobs:
           node-version: 24
       - name: Validate catalog.json
         run: node scripts/validate-catalog.mjs catalog.json
+      - name: Test the revocation validator
+        run: node --test scripts/validate-revocations.test.mjs
+      - name: Validate revocations.json
+        run: node scripts/validate-revocations.mjs revocations.json
