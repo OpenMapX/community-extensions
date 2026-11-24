@@ -20,11 +20,17 @@ tier.
 
 ```jsonc
 {
+  "schemaVersion": 1,                                            // document format; required
   "extensions": [ /* ExtensionCatalogEntry[] */ ],
   "removed":    [ { "id": "...", "reason": "..." } ],            // delisted (hidden, banner on installed copies)
-  "critical":   [ { "id": "...", "reason": "...", "maxVersion": "..." } ]  // kill-switch (offer to disable)
+  "critical":   [ { "id": "...", "reason": "...", "maxVersion": "1.2.0" } ]  // kill-switch up to maxVersion
 }
 ```
+
+`schemaVersion` must be `1`. OpenMapX refuses a catalog with a missing or different format version,
+and it refuses a bare list of entries. Extension, service and integration ids are lowercase slugs of
+at most 48 characters, `^[a-z0-9]+(-[a-z0-9]+)*$`, and every `version` and `maxVersion` is a
+semantic version.
 
 An entry carries only **editorial** metadata (how it appears in the store) plus a pointer to the
 extension's own components. Everything developer-controlled — **`version`, `minPlatform`, the
@@ -36,7 +42,7 @@ releases automatically):
 
 ```jsonc
 {
-  "id": "my-extension",                    // ^[a-z0-9][a-z0-9-]*$
+  "id": "my-extension",                    // ^[a-z0-9]+(-[a-z0-9]+)*$, at most 48 characters
   "name": "My Extension",
   "summary": "One line for the card.",
   "description": "A paragraph for the detail view.",
@@ -83,14 +89,17 @@ extension but never add one, change a manifest or raise trust.
 
 ```json
 {
+  "schemaVersion": 1,
   "removed": [{ "id": "gone-ext", "reason": "abandoned" }],
   "critical": [{ "id": "bad-ext", "reason": "advisory", "maxVersion": "1.2.0" }]
 }
 ```
 
-`removed` withdraws an extension. `critical` blocks it from running on every instance; `maxVersion`
-is shown to operators as the last affected version and does not narrow the block. Lift a revocation
-by deleting its entry. CI rejects
+`schemaVersion` must be `1`; an instance refuses a feed with a missing or different format version
+and keeps its last good copy. `removed` withdraws an extension. `critical` blocks it on every
+instance: `maxVersion`, a semantic version, names the last affected version, so the entry blocks that
+version and every earlier one while a fixed later release stays installable. An entry without
+`maxVersion` blocks every version. Lift a revocation by deleting its entry. CI rejects
 the file if instances could not read it, or if a mistake would be silently ignored, such as a
 misspelled list name. An instance that cannot read a valid feed keeps its last good copy and marks it
 stale.
