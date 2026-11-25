@@ -51,18 +51,37 @@ export function validateCatalog(text) {
     if (seen.has(e.id)) errors.push(`${at}: duplicate id`);
     seen.add(e.id);
     if (!e.name) errors.push(`${at}: name is required`);
-    // version/platform are developer-controlled and read live from the manifest —
-    // a manifest entry must NOT carry them (keeps the catalog free of per-release
-    // edits). Inline entries (no manifest) still declare their own version.
+    // A moving manifest entry reads version and platform live from the manifest,
+    // so it must not carry them. A pinned manifest entry authorizes exact manifest
+    // bytes: it names their SHA-256 and the version they declare, which OpenMapX
+    // needs to treat the entry as verified. Inline entries declare their version.
+    const pinned = e.manifestSha256 !== undefined;
+    if (pinned && !e.manifest) {
+      errors.push(`${at}: manifestSha256 needs a manifest URL`);
+    }
+    if (pinned && (typeof e.manifestSha256 !== "string" || !SHA256_RE.test(e.manifestSha256))) {
+      errors.push(`${at}: manifestSha256 must be a 64-character hex SHA-256`);
+    }
+    if (pinned && typeof e.manifest === "string" && /\/releases\/latest\//.test(e.manifest)) {
+      errors.push(`${at}: a pinned manifest must use a release tag URL, not releases/latest`);
+    }
     if (!e.manifest && !e.version) {
       errors.push(`${at}: version is required for inline entries (no manifest)`);
+    }
+    if (pinned && e.manifest && !e.version) {
+      errors.push(`${at}: version is required for a pinned manifest entry`);
     }
     if (e.version !== undefined && (typeof e.version !== "string" || !SEMVER.test(e.version))) {
       errors.push(`${at}: version must be a semantic version such as 1.0.0`);
     }
-    if (e.manifest && (e.version || e.minPlatform || e.lastUpdated)) {
+    if (e.manifest && !pinned && e.version) {
       errors.push(
-        `${at}: a manifest entry must not carry version/minPlatform/lastUpdated — those come from the manifest`,
+        `${at}: a manifest entry without manifestSha256 must not carry version — it comes from the manifest`,
+      );
+    }
+    if (e.manifest && (e.minPlatform || e.lastUpdated)) {
+      errors.push(
+        `${at}: a manifest entry must not carry minPlatform/lastUpdated — those come from the manifest`,
       );
     }
 
