@@ -11,7 +11,9 @@
       "categories": ["road-conditions", "data-source", "map-overlay"],
       "tags": ["traffic", "datex2", "open511", "wzdx", "incidents"],
       "featured": true,
-      "manifest": "https://github.com/OpenConditions/openconditions/releases/latest/download/extension.json"
+      "version": "0.8.2",
+      "manifest": "https://github.com/OpenConditions/openconditions/releases/download/v0.8.2/extension.json",
+      "manifestSha256": "8ac2ea796900c55fbb039e70b89d68c2fa5676b3c51ece0c4d48ea34e75e3f31"
     }
   ],
   "removed": [],

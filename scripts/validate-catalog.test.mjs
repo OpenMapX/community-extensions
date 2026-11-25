@@ -35,6 +35,32 @@ test("accepts a manifest entry, an inline entry and control lists", () => {
   );
 });
 
+test("accepts a pinned manifest entry with its version and digest", () => {
+  const pinned = {
+    id: "pinned-ext",
+    name: "Pinned",
+    version: "1.2.3",
+    manifest: "https://github.com/you/pinned-ext/releases/download/v1.2.3/extension.json",
+    manifestSha256: "c".repeat(64),
+  };
+  ok(catalog({ extensions: [pinned] }));
+  bad(catalog({ extensions: [{ ...pinned, version: undefined }] }), /version is required for a pinned/);
+  bad(catalog({ extensions: [{ ...pinned, manifestSha256: "c".repeat(63) }] }), /64-character/);
+  bad(
+    catalog({
+      extensions: [
+        {
+          ...pinned,
+          manifest: "https://github.com/you/pinned-ext/releases/latest/download/extension.json",
+        },
+      ],
+    }),
+    /releases\/latest/,
+  );
+  bad(catalog({ extensions: [{ ...entry, version: "1.0.0" }] }), /without manifestSha256/);
+  bad(catalog({ extensions: [{ ...pinned, minPlatform: "1.0" }] }), /minPlatform/);
+});
+
 test("accepts only the versioned object form", () => {
   bad([entry], /JSON object/);
   bad({ extensions: [entry] }, /schemaVersion/);

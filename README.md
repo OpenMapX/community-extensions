@@ -56,8 +56,24 @@ releases automatically):
 ```
 
 The store reads `version`/`minPlatform`/components live from that manifest; a manifest entry must
-**not** carry them (the validator rejects it). Point `manifest` at a pinned tag instead
-(`…/releases/download/v1.2.3/extension.json`) if you want each version gated behind a catalog edit.
+**not** carry them (the validator rejects it). Such an entry is installed with community trust.
+
+**Pinned — authorize exact manifest bytes.** Point `manifest` at a release tag, and add the
+`version` that manifest declares and the SHA-256 of its bytes. OpenMapX refuses a manifest whose
+bytes differ, and only a pinned entry in the default catalog is installed with verified trust. Each
+release then needs a catalog edit:
+
+```jsonc
+{
+  "id": "my-extension",
+  "name": "My Extension",
+  "version": "1.2.3",
+  "manifest": "https://github.com/you/my-extension/releases/download/v1.2.3/extension.json",
+  "manifestSha256": "<sha256 of the extension.json bytes>"
+}
+```
+
+Compute the digest with `curl -fsSL <manifest url> | shasum -a 256`.
 
 **Alternative — inline the components** (no `manifest`). Then the entry *does* declare its own
 `version` and pins each part directly — and every release needs a catalog PR:
